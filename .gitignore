@@ -216,3 +216,39 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ===== 密钥与凭据（防止 API key 泄露） =====
+
+# 环境变量文件（常含 API key、token）
+.env.*
+!.env.example
+
+# 私钥 / 证书文件
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ppk
+id_rsa*
+id_ed25519*
+
+# 凭据 JSON（云服务账号密钥的常见格式）
+credentials.json
+*_credentials.json
+service-account*.json
+
+# API key / secret / token 命名模式
+*apikey*
+*api-key*
+*api_key*
+*.secret
+secrets.*
+*_secret*
+
+# 其他常见凭据位置
+.aws/
+.gnupg/
+.netrc
+.kube/
