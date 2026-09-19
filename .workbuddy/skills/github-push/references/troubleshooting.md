@@ -30,6 +30,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://api.github.com   # 期望 200
 python ".workbuddy/skills/github-push/scripts/push_via_api.py" \
   --repo "E:/repos/statistics-data-analysis-2026" --branch main -m "<提交信息>"
 ```
+注意：脚本推送的是 **git 索引**，必须先 `git add` + `git commit` 再运行。
 
 **若 curl 也不通**：网络完全受限，脚本同样不可用。向用户说明「当前环境无法访问 GitHub，改动已在本地提交，请在有网络的环境执行 `git push origin main`」，不要反复重试。
 
@@ -40,6 +41,21 @@ python ".workbuddy/skills/github-push/scripts/push_via_api.py" \
 GIT_HTTP_LOW_SPEED_LIMIT=1000 GIT_HTTP_LOW_SPEED_TIME=20 git push origin main
 ```
 仍失败则走 A1 的 API 路径。
+
+### A3. 按对象拉取可绕过受限网络（实测有效）
+
+**现象**：本环境下 `git fetch` / `git push` 均报 502，但下面的命令**成功**：
+```bash
+git fetch --no-tags https://github.com/<owner>/<repo>.git <具体SHA>
+```
+**原因**：普通 fetch 走 git smart-http 端点（受限），而带上具体 SHA 的 fetch 只需从 GitHub 取单个对象包，走的通道不同。
+
+**用途**：API 兜底推送后，用它把本地 HEAD 对齐到远程 SHA：
+```bash
+git fetch --no-tags origin <远程SHA>
+git reset --hard <远程SHA>
+```
+`push_via_api.py` 的 `materialize_remote_commit()` 已内置该逻辑，无需手动执行。
 
 ---
 
@@ -179,7 +195,9 @@ git status -sb                                          # 应显示 ## main...or
 ```
 > 原理：loose ref 优先级高于 packed-refs，手动写文件即可让 git 读到正确值。
 
-`push_via_api.py` 的 `sync_local()` 已内置该修复（先 `update-ref`，失败再写 loose ref，最后 `pack-refs --all`），一般无需手动执行。
+**注意**：此场景下 `git update-ref refs/remotes/origin/main <SHA>` 会**静默返回 0 但不生效**，不要以为它成功了就跳过验证——必须用 `git rev-parse` 复核。
+
+`push_via_api.py` 的 `sync_local()` 已内置该修复（先 `update-ref -d` + `update-ref`，失败再写 loose ref，最后 `pack-refs --all` 并复核），一般无需手动执行。
 
 ### F2. API 推送后本地 HEAD 与远程 SHA 不同
 

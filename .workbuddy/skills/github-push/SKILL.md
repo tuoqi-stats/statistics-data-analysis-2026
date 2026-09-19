@@ -108,7 +108,7 @@ git push origin main
 
 ### 步骤 5 兜底方案：GitHub Git Data API 推送
 
-适用条件：`git push` 因网络受限失败，但 `api.github.com` 可达。命令：
+适用条件：`git push` 因网络受限失败，但 `api.github.com` 可达（`curl -s -o /dev/null -w "%{http_code}" https://api.github.com` 返回 200）。命令：
 
 ```bash
 python ".workbuddy/skills/github-push/scripts/push_via_api.py" \
@@ -123,8 +123,10 @@ python ".workbuddy/skills/github-push/scripts/push_via_api.py" \
 
 脚本执行的等价动作：读取 git 索引 → 取远程 HEAD 与 base tree → 逐文件对比算出新增/修改/删除 → 逐个建 blob → 建 tree（含删除项）→ 基于远程 HEAD 建 commit → 更新分支 ref（`force=false`，保证快进）→ 对齐本地 HEAD 与远程跟踪引用 → 调 API 验证。
 
+- **先提交再兜底**：脚本推送的是 git 索引内容，所以必须先完成步骤 3–4（add + commit），否则索引里没有新内容。
 - 脚本报「远程分支已前进」：说明远程有新提交，重新运行一次即可（会基于新 HEAD 重建）。
 - API 推送生成的 commit SHA 与本地 git commit 不同（对象不同、内容一致），脚本会自动把本地 HEAD 对齐到远程 SHA，属预期行为。
+- 若脚本提示「本地 HEAD 仍为 xxx」：说明对象拉取也失败（网络完全受限）。远程推送其实已成功，本地文件内容与远程一致，仅 commit SHA 不同；网络恢复后执行 `git fetch origin && git reset --hard origin/main` 即可对齐。**不要**因此重跑推送或改用 `--force`。
 - 脚本打印的 token 来源、文件清单、SHA 需如实转述给用户。
 
 ### 步骤 6：验证并汇报

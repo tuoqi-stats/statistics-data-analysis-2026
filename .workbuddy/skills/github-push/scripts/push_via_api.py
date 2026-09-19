@@ -175,31 +175,64 @@ def read_remote_tree(owner: str, name: str, tree_sha: str, token: str, host: str
 # --------------------------------------------------------------------------- #
 # 本地同步
 # --------------------------------------------------------------------------- #
+def materialize_remote_commit(repo: str, remote: str, sha: str) -> bool:
+    """本地缺少该对象时，按对象精确拉取（实测在 git fetch 报 502 时仍可用）。
+
+    普通 git fetch 走 git smart-http 端点，受限网络下会 502；而带上具体 SHA 的
+    fetch 只需从 GitHub 取单个对象，实测在本环境可成功。
+    """
+    url = run_git(repo, ["remote", "get-url", remote], check=False).stdout.strip()
+    if not url:
+        return False
+    proc = run_git(
+        repo, ["fetch", "--no-tags", url, sha], check=False, text=False
+    )
+    if proc.returncode == 0 and not run_git(
+        repo, ["cat-file", "-e", f"{sha}^{{commit}}"], check=False
+    ).returncode:
+        log(f"   已按对象拉取 commit {sha[:8]}。")
+        return True
+    return False
+
+
 def sync_local(repo: str, remote: str, branch: str, new_sha: str) -> None:
     run_git(repo, ["fetch", remote], check=False)
     if run_git(repo, ["cat-file", "-e", f"{new_sha}^{{commit}}"], check=False).returncode:
         run_git(repo, ["fetch", remote, branch], check=False)
     if run_git(repo, ["cat-file", "-e", f"{new_sha}^{{commit}}"], check=False).returncode:
-        log(f"⚠️  本地缺少对象 {new_sha[:8]}，跳过本地 HEAD 对齐（下次 git fetch 后可恢复）。")
+        materialize_remote_commit(repo, remote, new_sha)
+
+    if run_git(repo, ["cat-file", "-e", f"{new_sha}^{{commit}}"], check=False).returncode:
+        stale = run_git(repo, ["rev-parse", "HEAD"], check=False).stdout.strip()
+        log(f"⚠️  本地 HEAD 仍为 {stale[:8] if stale else '未知'}（远程为 {new_sha[:8]}）。")
+        log("    远程推送已完成，本地文件内容与远程一致，仅 commit SHA 不同；")
+        log("    网络恢复后执行 git fetch origin && git reset --hard origin/main 即可对齐。")
+        if not run_git(repo, ["diff", "--quiet", "HEAD", new_sha], check=False).returncode:
+            log("    提示：本地工作区与远程内容一致，可直接运行上述命令。")
         return
 
     run_git(repo, ["reset", "--hard", new_sha])
+    log(f"   本地 HEAD 已对齐到 {new_sha[:8]}。")
 
     # 修复 origin/<branch> 跟踪引用（可能困在 packed-refs 中读不到新值）
     tracking = f"refs/remotes/{remote}/{branch}"
     cur = run_git(repo, ["rev-parse", tracking], check=False).stdout.strip()
     if cur != new_sha:
+        # 注意：git update-ref 在引用困于 packed-refs 时会静默失效，故逐级降级
+        run_git(repo, ["update-ref", "-d", tracking], check=False)
         run_git(repo, ["update-ref", tracking, new_sha], check=False)
         cur = run_git(repo, ["rev-parse", tracking], check=False).stdout.strip()
     if cur != new_sha:
+        # 直接写 loose ref：优先级高于 packed-refs，可覆盖旧值
         git_dir = run_git(repo, ["rev-parse", "--absolute-git-dir"]).stdout.strip()
-        loose = os.path.join(git_dir, "refs", "remotes", remote)
-        os.makedirs(loose, exist_ok=True)
-        with open(os.path.join(loose, branch), "w", encoding="ascii") as fh:
+        loose_dir = os.path.join(git_dir, "refs", "remotes", remote)
+        os.makedirs(loose_dir, exist_ok=True)
+        with open(os.path.join(loose_dir, branch), "w", encoding="ascii") as fh:
             fh.write(new_sha + "\n")
         run_git(repo, ["pack-refs", "--all"], check=False)
         cur = run_git(repo, ["rev-parse", tracking], check=False).stdout.strip()
-    log(f"   本地 {tracking} → {cur[:8] if cur else '未知'}")
+    status = "已同步" if cur == new_sha else "⚠️ 仍不一致，需手动修复"
+    log(f"   {tracking} → {cur[:8] if cur else '未知'}（{status}）")
 
 
 # --------------------------------------------------------------------------- #
