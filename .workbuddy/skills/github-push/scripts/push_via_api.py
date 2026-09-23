@@ -5,8 +5,12 @@
 但 api.github.com 仍可达时，用 REST API 复刻一次快进式 `git push`。
 
 原理：读取本地 git 索引 → 与远程 HEAD 的 tree 逐文件对比 → 为新增/修改文件建 blob
-      → 基于远程 base_tree 建新 tree（含删除项）→ 以远程 HEAD 为 parent 建 commit
+      → 基于远程 base_tree 建新 tree（删除项需 --allow-delete 显式授权）→ 以远程 HEAD 为 parent 建 commit
       → 更新分支 ref（force=false）→ 对齐本地 HEAD 与远程跟踪引用 → 调 API 验证。
+
+安全默认：脚本按「本地索引 = 仓库全量真相」计算删除项。若本地落后于远程
+（例如刚在 GitHub 网页上传过文件），把远程独有的文件当成"待删除"会误删。
+因此删除默认不生效：检测到删除项即中止，需先同步本地，或显式加 --allow-delete。
 
 用法：
     python push_via_api.py --repo "E:/repos/statistics-data-analysis-2026" \
@@ -30,6 +34,24 @@ import urllib.request
 API_VERSION = "2022-11-28"
 USER_AGENT = "workbuddy-github-push"
 MAX_BLOB_MB_DEFAULT = 50.0
+SCAN_MAX_BYTES = 2 * 1024 * 1024  # 内容扫描的单文件上限，超过则只查文件名
+
+# 疑似凭据的路径特征（命中即拦截）
+SECRET_PATH_PATTERNS = [
+    r"(^|/)\.env(\.|$)", r"\.pem$", r"\.key$", r"\.pfx$", r"\.p12$",
+    r"(^|/)id_rsa", r"(^|/)id_ed25519", r"(^|/)\.npmrc$", r"(^|/)\.netrc$",
+    r"credential", r"secret", r"token",
+]
+
+# 疑似凭据的内容特征（命中即拦截）
+SECRET_CONTENT_PATTERNS = [
+    r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
+    r"gh[pousr]_[A-Za-z0-9]{30,}",          # GitHub 各类 token
+    r"github_pat_[A-Za-z0-9_]{20,}",
+    r"AKIA[0-9A-Z]{16}",                     # AWS Access Key ID
+    r"(?i)(api[_-]?key|secret|token|password|passwd|access[_-]?key)"
+    r"\s*[:=]\s*['\"]?[A-Za-z0-9_\-]{16,}",
+]
 
 
 # --------------------------------------------------------------------------- #
@@ -45,13 +67,47 @@ def fail(msg: str) -> "NoReturn":  # type: ignore[valid-type]
 
 
 def run_git(repo: str, args: list[str], check: bool = True, text: bool = True):
+    # 显式用 UTF-8 解码：Windows 默认按本地代码页（cp936）解码，
+    # 会把 UTF-8 文件名（如中文路径）变成乱码，导致推送到远程的路径错误。
+    kwargs = {"encoding": "utf-8", "errors": "replace"} if text else {}
     proc = subprocess.run(
-        ["git", *args], cwd=repo, capture_output=True, text=text
+        ["git", *args], cwd=repo, capture_output=True, text=text, **kwargs
     )
     if check and proc.returncode != 0:
         err = proc.stderr if text else proc.stderr.decode(errors="replace")
         fail(f"git {' '.join(args)} 执行失败：\n{err.strip()}")
     return proc
+
+
+# --------------------------------------------------------------------------- #
+# 提交前凭据审查（脚本级兜底闸门）
+# --------------------------------------------------------------------------- #
+def scan_secrets(repo: str, paths: list[str]) -> list[str]:
+    """在推送前扫描待推送文件，返回命中说明列表（空列表表示通过）。
+
+    与 SKILL.md 步骤 2 的人工审查互为兜底：人工审查看 `git status`，
+    本函数直接看即将进入 blob 的实际内容。
+    """
+    hits: list[str] = []
+    for path in paths:
+        for pat in SECRET_PATH_PATTERNS:
+            if re.search(pat, path, re.I):
+                hits.append(f"{path} —— 文件名匹配 /{pat}/")
+                break
+        else:
+            blob = run_git(repo, ["cat-file", "blob", f":{path}"], check=False, text=False).stdout
+            if not blob or len(blob) > SCAN_MAX_BYTES:
+                continue
+            if b"\x00" in blob[:8000]:      # 二进制文件不做内容匹配
+                continue
+            body = blob.decode("utf-8", errors="ignore")
+            for pat in SECRET_CONTENT_PATTERNS:
+                m = re.search(pat, body)
+                if m:
+                    line_no = body[: m.start()].count("\n") + 1
+                    hits.append(f"{path}:{line_no} —— 内容匹配 /{pat}/（不回显命中明文）")
+                    break
+    return hits
 
 
 # --------------------------------------------------------------------------- #
@@ -249,6 +305,16 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="只打印推送计划，不写入")
     parser.add_argument("--no-sync", action="store_true", help="跳过推送后的本地 HEAD 对齐")
     parser.add_argument(
+        "--allow-secrets",
+        action="store_true",
+        help="跳过提交前凭据审查（危险：凭据一旦推送即视为泄露）",
+    )
+    parser.add_argument(
+        "--allow-delete",
+        action="store_true",
+        help="允许删除远程独有的文件（默认禁止，防止本地落后时误删）",
+    )
+    parser.add_argument(
         "--max-blob-mb",
         type=float,
         default=MAX_BLOB_MB_DEFAULT,
@@ -304,15 +370,48 @@ def main() -> None:
 
     if submodules:
         log(f"⚠️  跳过 {len(submodules)} 个子模块条目（API 无法提交 submodule）：{submodules}")
+    bad_names = [p for p in local if "\ufffd" in p]
+    if bad_names:
+        log(f"⚠️  以下路径含无法解码的字节，推送后远程路径会出错，请先重命名：{bad_names}")
     if not to_write and not to_delete:
         log("\n✅ 本地内容与远程一致，无需推送。")
         return
+
+    # 提交前凭据审查：命中即拦截（--allow-secrets 可显式跳过）
+    if not args.allow_secrets:
+        hits = scan_secrets(repo, to_write)
+        if hits:
+            log("\n🚫 凭据审查未通过，已中止推送：")
+            for h in hits:
+                log(f"   {h}")
+            if args.dry_run:
+                log("\n（--dry-run，未写入远程。正式推送前必须先处理上述文件。）")
+            else:
+                fail(
+                    "疑似凭据/密钥不允许推送。请先 git restore --staged <file> 移出，"
+                    "或把文件加入 .gitignore；确属误报时用 --allow-secrets 显式放行。"
+                )
+    else:
+        log("\n⚠️  已跳过提交前凭据审查（--allow-secrets）。")
 
     log(f"\n待推送计划：新增/修改 {len(to_write)} 个，删除 {len(to_delete)} 个")
     for p in to_write:
         log(f"   M {p}")
     for p in to_delete:
         log(f"   D {p}")
+
+    # 删除项保护：本地索引不等于仓库全量真相时，远程独有的文件会被误判为删除。
+    if to_delete and not args.allow_delete:
+        log(
+            f"\n🚫 检测到 {len(to_delete)} 个待删除文件，已中止。"
+            "\n   远程有、本地索引没有的文件，可能是因为本地落后于远程"
+            "（例如刚在 GitHub 网页上传过、或本地跟踪引用卡在旧值）。"
+            "\n   建议先同步本地再重试：git fetch origin && git reset --hard origin/main"
+            "\n   确认这些文件确实该从远程删除时，加 --allow-delete 显式授权。"
+        )
+        if not args.dry_run:
+            sys.exit(1)
+        log("（--dry-run，未写入远程；正式推送前请先处理。）")
 
     if args.dry_run:
         log("\n（--dry-run，未写入远程。）")

@@ -119,11 +119,13 @@ python ".workbuddy/skills/github-push/scripts/push_via_api.py" \
 
 若当前工作目录不是仓库根目录，把脚本路径换成绝对路径 `E:/repos/statistics-data-analysis-2026/.workbuddy/skills/github-push/scripts/push_via_api.py`。
 
-参数：`--dry-run` 只打印推送计划不写入；`--no-sync` 跳过本地同步；`--max-blob-mb N` 调整大文件阈值（默认 50）；`--remote` 指定 remote（默认 origin）。
+参数：`--dry-run` 只打印推送计划不写入；`--no-sync` 跳过本地同步；`--max-blob-mb N` 调整大文件阈值（默认 50）；`--remote` 指定 remote（默认 origin）；`--allow-secrets` 显式跳过凭据审查（危险）；`--allow-delete` 显式授权删除远程独有的文件（危险）。
 
 脚本执行的等价动作：读取 git 索引 → 取远程 HEAD 与 base tree → 逐文件对比算出新增/修改/删除 → 逐个建 blob → 建 tree（含删除项）→ 基于远程 HEAD 建 commit → 更新分支 ref（`force=false`，保证快进）→ 对齐本地 HEAD 与远程跟踪引用 → 调 API 验证。
 
 - **先提交再兜底**：脚本推送的是 git 索引内容，所以必须先完成步骤 3–4（add + commit），否则索引里没有新内容。
+- **脚本自带凭据闸门**：推送前会扫描本次待推送文件——文件名命中 `.env`/`*.pem`/`*credential*`/`*secret*`/`*token*` 等，或内容命中私钥头、`ghp_*`/`github_pat_*`/`AKIA*`、`password=...` 长串等，一律中止。命中时按步骤 2 处理（移出暂存或加入 `.gitignore`），不要习惯性加 `--allow-secrets` 放行；只有确认是误报才放行。
+- **删除默认禁止**：脚本以「本地索引 = 仓库全量真相」计算删除项。若本地落后于远程（刚在 GitHub 网页上传过文件、或 `origin/main` 跟踪引用卡在旧值），远程独有的文件会被误判为「待删除」。因此脚本检测到删除项即中止，先按提示同步本地（`git fetch origin && git reset --hard origin/main`）再重试；确认确实要删掉远程文件时才加 `--allow-delete`。**不要**为了跳过这个中止而习惯性加 `--allow-delete`。
 - 脚本报「远程分支已前进」：说明远程有新提交，重新运行一次即可（会基于新 HEAD 重建）。
 - API 推送生成的 commit SHA 与本地 git commit 不同（对象不同、内容一致），脚本会自动把本地 HEAD 对齐到远程 SHA，属预期行为。
 - 若脚本提示「本地 HEAD 仍为 xxx」：说明对象拉取也失败（网络完全受限）。远程推送其实已成功，本地文件内容与远程一致，仅 commit SHA 不同；网络恢复后执行 `git fetch origin && git reset --hard origin/main` 即可对齐。**不要**因此重跑推送或改用 `--force`。
