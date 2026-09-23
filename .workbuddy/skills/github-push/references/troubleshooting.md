@@ -190,22 +190,86 @@ git commit --amend --no-edit
 mkdir -p .git/refs/remotes/origin
 printf '<正确SHA>\n' > .git/refs/remotes/origin/main    # 直接写 loose ref
 git rev-parse origin/main                               # 验证已是新值
-git pack-refs --all                                     # 整理回 packed-refs
 git status -sb                                          # 应显示 ## main...origin/main，无 ahead/behind
 ```
 > 原理：loose ref 优先级高于 packed-refs，手动写文件即可让 git 读到正确值。
 
 **注意**：此场景下 `git update-ref refs/remotes/origin/main <SHA>` 会**静默返回 0 但不生效**，不要以为它成功了就跳过验证——必须用 `git rev-parse` 复核。
 
-`push_via_api.py` 的 `sync_local()` 已内置该修复（先 `update-ref -d` + `update-ref`，失败再写 loose ref，最后 `pack-refs --all` 并复核），一般无需手动执行。
+**不要用 `git pack-refs --all` 收尾**（2026-09-23 实测修正）：该命令会把刚写好的 loose ref 重新打包，下次 push 后引用再次卡住，问题复发。早期版本的本手册曾建议执行它，已废弃。更要紧的是，`pack-refs --all --prune` 会**删除打包后变空的 `refs/` 子目录**，极端情况下连 `.git/refs` 本身都被移除，导致整个仓库无法被 git 识别（见 F3）。保持 loose ref 现状即可。
+
+`push_via_api.py` 的 `sync_local()` 已内置该修复（先 `update-ref -d` + `update-ref`，失败再直接写 loose ref 并复核），一般无需手动执行。
 
 ### F2. API 推送后本地 HEAD 与远程 SHA 不同
 
 **说明**：API 创建的 commit 与本地 `git commit` 是两个不同对象（parent/tree 相同则内容一致，SHA 不同）。这是预期行为，不是错误。脚本会自动 `git reset --hard <远程SHA>` 对齐，使 `git status` 恢复干净。若要跳过对齐使用 `--no-sync`。
 
+### F3. `fatal: not a git repository` —— 但 `ls .git` 明明有内容
+
+**症状**（2026-09-23 实测）：`pwd` 就在仓库内，`ls -a .git` 能列出 `HEAD`、`objects`、`packed-refs`，但任何 git 命令都报：
+```
+fatal: not a git repository (or any of the parent directories): .git
+```
+`git -C <路径>` / `--git-dir=<路径>` 同样失败，而新建目录里 `git init` 一切正常——说明 git 本身没问题，是这个仓库的 `.git` 结构不完整。
+
+**根因**：`.git/refs` 目录**不存在**。git 的 `is_git_directory()` 要求 `.git` 下同时存在 `HEAD`、`objects`、`refs` 三项，缺 `refs` 就直接判定"不是仓库"。`refs` 消失的常见原因是被打断的 `git rebase`/`git gc --auto` 触发 `pack-refs --all --prune`：所有 loose ref 被打包进 `packed-refs` 后，变空的 `refs/heads`、`refs/remotes`、甚至 `refs` 本身被当作空目录清理掉。
+
+**诊断**：
+```bash
+ls -a .git                    # 列表里没有 refs 即命中
+cat .git/packed-refs          # 引用数据其实还在，仓库没有丢东西
+```
+
+**修复**（重建空目录即可，不动任何数据）：
+```bash
+mkdir -p .git/refs/heads .git/refs/tags .git/refs/remotes
+git rev-parse --is-inside-work-tree   # 应返回 true
+git rev-parse HEAD                    # 应能读出 SHA
+```
+
+**注意**：修复后若 `git log` 报 `Could not read <sha>`，说明还有对象缺失，见 F4。
+
+### F4. `unresolved deltas left after unpacking` / `Could not read <sha>`
+
+**症状**：`git fetch` 失败并报：
+```
+error: Could not read <sha>
+fatal: unresolved deltas left after unpacking
+fatal: unpack-objects failed
+```
+`git fsck` 报告 `broken link from commit ... to ...`、`missing commit/blob`、`invalid sha1 pointer in cache-tree of .git/index`。
+
+**根因**：`.git/objects/pack/` 下**只剩 `.idx` 而 `.pack` 文件丢失**。索引还在，于是 git 认为这些对象存在并向服务端声明"已有"，服务端因此不再发送它们（thin pack），但本地实际取不到 → 解包时 delta 无法还原。
+
+**修复**（按顺序尝试）：
+1. 先把孤立的 `.idx` 移出 pack 目录，让 git 不再误认为对象存在：
+   ```bash
+   mkdir -p .git/orphan-pack-backup
+   mv .git/objects/pack/*.idx .git/orphan-pack-backup/
+   ```
+2. 重新拉取，通常会自动生成新的健康 pack：
+   ```bash
+   git fetch --no-tags origin
+   ls -la .git/objects/pack/          # 应出现配对的 .idx + .pack（+ .rev）
+   git fsck --no-progress             # 只应剩 dangling，不应再有 missing/broken link
+   ```
+3. 若 `fetch` 仍报错，说明本地声明了实际不存在的历史。**最省事的做法是重新克隆**（远端完好时本地无独有数据）：
+   ```bash
+   cd /e/repos
+   git clone https://github.com/tuoqi-stats/statistics-data-analysis-2026.git <新目录>
+   ```
+   克隆后**务必用 `ls` + `git log` + `git ls-files | wc -l` 验证**，不要只看退出码（沙箱中 clone 可能静默失败）。把工作区未提交的改动先复制到新克隆再提交。
+4. 索引的 `cache-tree` 报 invalid sha1 时可单独重建索引，不必重建仓库：
+   ```bash
+   rm -f .git/index && git reset        # 仅重建索引，不动工作区文件
+   ```
+
+**预防**：不要在 ref 异常修复后执行 `git pack-refs --all`（见 F1）；对仓库执行长耗时 git 操作时避免中途强杀进程。
+
 ---
 
 ## G. 回滚与撤销
+
 
 以下操作会丢弃内容，执行前**必须**向用户说明影响并取得确认。
 

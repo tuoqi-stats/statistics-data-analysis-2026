@@ -285,7 +285,10 @@ def sync_local(repo: str, remote: str, branch: str, new_sha: str) -> None:
         os.makedirs(loose_dir, exist_ok=True)
         with open(os.path.join(loose_dir, branch), "w", encoding="ascii") as fh:
             fh.write(new_sha + "\n")
-        run_git(repo, ["pack-refs", "--all"], check=False)
+        # 刻意不执行 git pack-refs --all：
+        #  1) 会把刚写的 loose ref 重新打包，下次 push 后引用再次卡住；
+        #  2) --prune 会删除打包后变空的 refs/ 子目录，极端情况下连 .git/refs 都被移除，
+        #     导致 git 直接判定「not a git repository」（见 troubleshooting.md F3）。
         cur = run_git(repo, ["rev-parse", tracking], check=False).stdout.strip()
     status = "已同步" if cur == new_sha else "⚠️ 仍不一致，需手动修复"
     log(f"   {tracking} → {cur[:8] if cur else '未知'}（{status}）")
