@@ -35,15 +35,37 @@ statistics-data-analysis-2026/
 │       ├── MEMORY.md                  # 项目长期记忆
 │       └── 2026-09-09.md              # 当日工作日志
 │
-└── learning-materials/                # AI 概念学习资料库（技能产出）
-    ├── README.md                      # 资料库索引与约定
-    ├── agent.md                       # Agent（智能体）
-    ├── agent-skill.md                 # Agent Skill（智能体技能）
-    ├── llm-context.md                 # 大模型上下文（LLM Context）
-    ├── skill.md                       # Skill（技能）
-    ├── concept-relationship.md        # 概念关系：Agent、上下文与 Skill
-    └── concept-material-generator.md  # concept-material-generator（技能自述）
+├── learning-materials/                # AI 概念学习资料库（技能产出）
+│   ├── README.md                      # 资料库索引与约定
+│   ├── agent.md                       # Agent（智能体）
+│   ├── agent-skill.md                 # Agent Skill（智能体技能）
+│   ├── llm-context.md                 # 大模型上下文（LLM Context）
+│   ├── skill.md                       # Skill（技能）
+│   ├── concept-relationship.md        # 概念关系：Agent、上下文与 Skill
+│   └── concept-material-generator.md  # concept-material-generator（技能自述）
+│
+└── python-basics/                     # Python 基础语法学习资料（6 章 · 48 个可运行示例）
+    ├── README.md                      # 总入口：环境准备、学习路线、检查清单
+    ├── 01_变量/                       # 变量与命名规则、数据类型、类型转换、可变与不可变
+    ├── 02_运算符/                     # 算术、比较、逻辑、赋值、位、成员与身份运算符
+    ├── 03_表达式/                     # 表达式与语句、优先级、字符串、条件表达式、推导式
+    ├── 04_流程控制/                   # if、条件嵌套、while、for、循环控制、嵌套循环
+    ├── 05_函数/                       # 定义与调用、参数、返回值、作用域、递归
+    └── 06_综合练习/                   # 综合题（基础 8 + 进阶 6）+ 两个迷你项目
 ```
+
+---
+
+## Python 基础语法学习资料（python-basics/）
+
+除 AI 概念资料库外，本仓库另附一套 Python 基础语法自学资料，面向零基础学习者，可在 VSCode 中逐个文件直接运行：
+
+- **覆盖 5 大主题**：变量、运算符、表达式、流程控制、函数，另附综合练习与两个迷你项目。
+- **共 55 个文件**（48 个可运行 `.py` + 7 个 `README.md`），全部实测通过。
+- **设计约定**：每个 `.py` 独立可运行、无 `input()` 阻塞（秒级跑完）、每行 `print` 前用注释标注预期输出，便于边跑边对照。
+- **学习顺序**：先读各章 `README.md` → 按编号跑示例 → 改参数再跑 → 做`练习题.py` → 对`练习题_答案.py`。
+
+学习入口见 [python-basics/README.md](python-basics/README.md)。
 
 ---
 
