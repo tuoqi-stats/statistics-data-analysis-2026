@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="6vDTaVmmWGTRKmY2JeCy50">
+<head data-page-node-id="0D8ZjFBebedt6dEp2g7VMX">
+<meta charset="UTF-8" data-page-node-id="M4BTMk5D9aFCcHewQ1UNWq">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="QGaE9yIc8Fbqn2DEinALy9">
+<title>Skill · 概念学习资料</title>
+<style>
+  :root{
+    --bg:#f4f5f9; --card:#ffffff; --ink:#1f2330; --sub:#6b7280; --line:#e6e8f0;
+    --accent:#5b6cff; --m1:#6366f1; --m2:#0ea5e9; --m3:#ec4899; --m4:#f59e0b; --m5:#10b981; --m6:#8b5cf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;padding:0 0 60px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;padding:46px 20px 40px;border-radius:0 0 28px 28px;box-shadow:0 10px 30px rgba(139,92,246,.25)}
+  header h1{font-size:2.1rem;font-weight:800;letter-spacing:.5px}
+  header .tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .tag{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:4px 12px;border-radius:999px;font-size:.8rem}
+  header .meta{margin-top:14px;font-size:.85rem;opacity:.9}
+  .module{background:var(--card);border-radius:18px;margin-top:26px;padding:26px 30px 22px;box-shadow:0 2px 14px rgba(31,35,48,.05);border:1px solid var(--line);border-left:6px solid var(--accent)}
+  .module.m1{border-left-color:var(--m1)} .module.m2{border-left-color:var(--m2)}
+  .module.m3{border-left-color:var(--m3)} .module.m4{border-left-color:var(--m4)}
+  .module.m5{border-left-color:var(--m5)} .module.m6{border-left-color:var(--m6)}
+  .module h2{font-size:1.18rem;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .badge{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0}
+  .m1 .badge{background:var(--m1)} .m2 .badge{background:var(--m2)} .m3 .badge{background:var(--m3)}
+  .m4 .badge{background:var(--m4)} .m5 .badge{background:var(--m5)} .m6 .badge{background:var(--m6)}
+  .module h3{font-size:.98rem;margin:16px 0 8px;color:var(--ink)}
+  .module p{margin:8px 0;color:#374151}
+  .module ul{margin:8px 0 8px 6px;padding-left:20px}
+  .module li{margin:5px 0;color:#374151}
+  .analogy{background:#f5f3ff;border:1px dashed #ddd6fe;border-radius:12px;padding:14px 16px;margin:12px 0;font-size:.93rem}
+  .analogy b{color:var(--m6)}
+  .formula{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:16px 18px;margin:12px 0;font-family:"Cascadia Code",Consolas,monospace;font-size:.88rem;overflow-x:auto;line-height:1.7}
+  .formula .cmt{color:#94a3b8}
+  .formula .hl{color:#c4b5fd}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f8f9fc;color:var(--ink);font-weight:600}
+  tr:nth-child(even) td{background:#fafbff}
+  .ref{display:block;margin:8px 0;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:.9rem}
+  .ref .ty{display:inline-block;background:var(--m5);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:6px;margin-right:8px;vertical-align:middle}
+  .ref a{color:#047857;word-break:break-all}
+  .qbox{background:#faf5ff;border:1px solid #ddd6fe;border-radius:12px;padding:14px 16px;margin:10px 0}
+  .qbox .hint{color:var(--sub);font-size:.85rem;margin-top:6px}
+  ol.qlist{margin:6px 0 6px 6px;padding-left:22px}
+  ol.qlist li{margin:10px 0}
+  code{background:#f5f3ff;padding:2px 6px;border-radius:5px;font-family:"Cascadia Code",Consolas,monospace;font-size:.85em;color:#5b21b6}
+</style>
+</head>
+<body data-page-node-id="IRzorGLR44ZvzdC2KR3d9s">
+<header data-page-node-id="DHJGkYJt2y4T6coc424wVs">
+  <div class="wrap" data-page-node-id="5lpE0wFJAbsYl8W2LmirEG">
+    <h1 data-page-node-id="IY1S4nZJ9iTyqalvKB4gI5">Skill（技能）</h1>
+    <div class="tags" data-page-node-id="LMG96DhUoZo3L43iIzzYO1"><span class="tag" data-page-node-id="jl8E5GCJTuV8xGmJJ16huy">AI 应用</span><span class="tag" data-page-node-id="Hh0fbNKA4DdBHxFud3mFjU">Agent 能力扩展</span><span class="tag" data-page-node-id="5Dwk1cFwhjGwv9TJmduyCs">可复用</span></div>
+    <div class="meta" data-page-node-id="dZNlnLxTC3uMaBInxQds5o">概念学习资料 · 由 concept-learning-generator 生成 · 2026-09-09</div>
+  </div>
+</header>
+<div class="wrap" data-page-node-id="eQiggDKRKglHR7s68g8HPl">
+
+<!-- 模块1 -->
+<section class="module m1" data-page-node-id="FfW0bJF72OFwtY7Az47gBe">
+  <h2 data-page-node-id="Au2YiTWbnX5E4XlRjdJp2q"><span class="badge" data-page-node-id="A6GaAQsngi9PUVHcHv3ktu">1</span>个人通俗解释</h2>
+  <p data-page-node-id="IPGTNOA7FrFxg8xeUOBxTh">Skill = 新员工的岗位操作手册
+大模型很聪明，但不懂业务规则和固定流程。
+方案1：每次对话重复说明，麻烦还占用上下文；
+方案2：模型微调，成本高、耗时间。
+Skill是第三种选择：把做事流程存成手册。
+平时只显示简短书名（书脊），不占用桌面；
+需要干活时才翻开手册执行，用完合上，桌面清空。
+concept‑learning‑generator就是实例，固化生成学习资料的整套流程，不用反复复述要求。
+
+<!-- 模块2 -->
+<section class="module m2" data-page-node-id="PbaypDsZnx5EwC4VHd2uPk">
+  <h2 data-page-node-id="blHXLv7CIF0E2WPpVngyat"><span class="badge" data-page-node-id="EteUXFrcCcxcQ1WHIAZ3Fj">2</span>核心机制</h2>
+  <p data-page-node-id="DYxPwvDGDEr5jIN4FbNvfW">一个 Skill 通常由三个要素组成，缺一不可：</p>
+  <div class="formula" data-page-node-id="09d0lsb9oxjs26UTmI1iSa">Skill = <span class="hl" data-page-node-id="xx5XhDCFsybR6hfAmOVhWc">说明书(SKILL.md)</span>  <span class="cmt" data-page-node-id="Y5SbAJJeR1Xv3iKMpDPE4O">// 元数据 + 触发条件 + 工作流 + 质量底线</span><br data-page-node-id="mFztwnvifxzwIKPkgZ8Uv0">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="hl" data-page-node-id="5xpsoTYGJnkczxn1BE6DEw">工具/脚本(可选)</span> <span class="cmt" data-page-node-id="FtNj4r1Z39PNKEaAZUdjzL">// 可被调用的函数/资源</span><br data-page-node-id="0wc8RNEu9KDASqox2KOfol">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="hl" data-page-node-id="tDgGrKV1yJ7pfIbiRn7FOH">触发条件</span> <span class="cmt" data-page-node-id="SqMn5OLQYu7seYn282FG1F">// 什么场景该加载它</span><br data-page-node-id="6t0XQGF9KxSKex5M0HFG4n">
+<span class="cmt" data-page-node-id="0YwEkbBwNBgefwxs12R82s">// 智能体按需加载 → 按其工作流执行 → 产出符合质量底线的结果</span>
+  </div>
+  <h3 data-page-node-id="meCe5VfoDC1PZDufj570P7">SKILL.md 的结构（以本页所用 Skill 为例）</h3>
+  <ul data-page-node-id="4skStJKq6962EYUaIKDxP7">
+    <li data-page-node-id="oBhg5mnzD4dzPKzJ7HbTRQ"><strong data-page-node-id="TrSJiV3cERToODw39giOzp">YAML 元数据</strong>：<code data-page-node-id="Kv3pCEKQfXju3dDncQBa3T">name</code>、<code data-page-node-id="IR22YwfNQsHaZrsHVBzh92">description</code> 等，供系统识别与检索。</li>
+    <li data-page-node-id="J9F4SN4wVkZssCLAIRZpp6"><strong data-page-node-id="2ygxJ6vrpKe3sWPqIfCdQN">用途与触发条件</strong>：说明什么场景该启用该 Skill（避免乱用）。</li>
+    <li data-page-node-id="dCVMDsSoUaVOXE8HaHaSyq"><strong data-page-node-id="3oda76jlavAL79O3GK4R3p">输入/输出规范</strong>：明确要吃什么、吐什么、按什么结构吐。</li>
+    <li data-page-node-id="uiVK2jYq20gqldnbDHCzm2"><strong data-page-node-id="5ycfzbC5ZuhaneBqsBUGJW">工作流（Workflow）</strong>：把任务拆成有序步骤，指导智能体怎么做。</li>
+    <li data-page-node-id="0gjEChJCMNNlLDI7YABvIR"><strong data-page-node-id="ggJBhmpEcHmeUffC6d8O8y">质量底线</strong>：必须满足的硬约束（如"六大模块缺一不可""链接真实不编造"），保证一致性。</li>
+  </ul>
+  <h3 data-page-node-id="NKTPD5XSY9CLUpz1YBYWP4">运行机制要点</h3>
+  <ul data-page-node-id="mmFuPf4MQTekArtPy0eSeC">
+    <li data-page-node-id="BhuZ4momuJF94GdQdKUlLX"><strong data-page-node-id="iePN9gXE9j45jhTrpexz8K">按需加载</strong>：智能体识别到任务匹配某 Skill 触发条件，才把它的说明注入上下文，而非全程挂着所有 Skill（省 token、防干扰）。</li>
+    <li data-page-node-id="ZS6C15he4aCEBeKMpnqiHu"><strong data-page-node-id="RN8mLg5LOxHLzsevREtG4z">指令驱动</strong>：Skill 本质是结构化提示词 + 可选工具，靠 LLM 按指令执行；模型越强，Skill 表现越好。</li>
+    <li data-page-node-id="I7BixzNJeeIr8UYWOIEifQ"><strong data-page-node-id="HlUn4dy8YABMvoRYx6fjYF">可积累复用</strong>：一次写好，多次/多人复用，把"经验"固化成可分发的资产——这正是它与一次性提示词的根本区别。</li>
+  </ul>
+  <p data-page-node-id="zC0g0VY05faFweWFm4PODu">学术上，"把习得能力存进技能库供后续复用"的思路在 <strong data-page-node-id="grDpjQVypiVAEjrqgeCat8">Voyager</strong>（Minecraft 智能体）等工作里有清晰体现：智能体把成功的程序代码存为"技能"，遇到新任务时检索复用，从而持续成长。</p>
+</section>
+
+<!-- 模块3 -->
+<section class="module m3" data-page-node-id="y2UetwAeEABxWBSta5k7Zp">
+  <h2 data-page-node-id="DqJBMjpWJ1hBMBwakrF0aH"><span class="badge" data-page-node-id="6YOSpd5qaa7EQfU4GZT1jb">3</span>真实应用场景</h2>
+  <table data-page-node-id="lFUszk4CMfPeDLltFxBltC">
+    <tr data-page-node-id="OO67hffmhu8oBroqeow5V1"><th data-page-node-id="CkzFGpQNnE62jdN8XnzsIh">场景</th><th data-page-node-id="QyVnlL0T5Moq9wqULrC2eX">用在什么产品/环节</th><th data-page-node-id="PE9QJQZIHlzKTNIY8k1R8U">为什么用 Skill</th><th data-page-node-id="a07kWlBw2SyfDW36A0DJda">角色</th></tr>
+    <tr data-page-node-id="1kj9v0UlO7nThEozSjG9Gl"><td data-page-node-id="RMnkIaATpyRVixwBXRixUF">智能体平台</td><td data-page-node-id="64tnirSb9XYduhpRWqZxOR">WorkBuddy：用 SKILL.md 定义能力（如本页的 concept-learning-generator）</td><td data-page-node-id="Y3CvBXvUZQsYaKSnZWRhGB">把可复用任务封装成稳定能力，无需重写提示词</td><td data-page-node-id="5QaipN9HDGW5Qy2C51nqnx">核心方法</td></tr>
+    <tr data-page-node-id="sIyFGsKL5EuUcObajjrtKc"><td data-page-node-id="489rATlQmH5P8wLvtAyHxX">定制助手</td><td data-page-node-id="dffkyq2mvTVusDqakO56Ez">OpenAI Custom GPTs：把指令+工具+知识打包成一个 GPT</td><td data-page-node-id="YjoMMHYtAmLDBe9CwyTjdl">用户一键获得某领域专长，跨对话复用</td><td data-page-node-id="S7RNBesVrxnjb1FFODtIEX">核心方法</td></tr>
+    <tr data-page-node-id="eay8nxsB6WBUiqjg1PuP4A"><td data-page-node-id="pYTjhrA8CUwtzx9n6ASDCd">智能体成长</td><td data-page-node-id="u0Vydf6TI2vzHrI9izeBk2">Voyager：把成功代码存为技能，遇到新任务检索复用</td><td data-page-node-id="I2BQ6XUBMKsz3R7ExxKJr5">让智能体积累能力而非每次从零开始</td><td data-page-node-id="TXfzO2GR5XxSYL2fnfg5E0">核心方法</td></tr>
+    <tr data-page-node-id="0U2PBP7gPdteW2zUKshUJO"><td data-page-node-id="qZTEISWhpwerb1UfIsHymk">工具编排</td><td data-page-node-id="nODywiRrOKWS8W5drxWnBc">LangChain/LangGraph：把工具+提示封装成可复用 Agent 能力</td><td data-page-node-id="8LeHG3jFN8Sn9jHEkFO71P">标准化"工具+流程"组合，便于组合调用</td><td data-page-node-id="dOmd5ZTf7jhElOcIOXObAE">辅助组件</td></tr>
+    <tr data-page-node-id="IZfNTVpqGHRKJYJ9Am9Y9I"><td data-page-node-id="qWLuD1TiyDvw4MISK7pXzF">企业流程</td><td data-page-node-id="qKavzrmBMqZKcyR2hGEYl7">把"发周报""跑某分析"等固定流程写成 Skill 供团队调用</td><td data-page-node-id="ELFSCJEtVb0vPtWyDAWryV">把团队最佳实践固化，人人得到一致产出</td><td data-page-node-id="vB5TQpFwUDqdgPy8G2O547">核心方法</td></tr>
+  </table>
+  <p data-page-node-id="O5N9dMxLAORE2C0j6DzsB0">共性：Skill 把"怎么做某件事"的知识从人脑/零散提示词里抽出来，固化为可加载、可复用、可迭代的资产。</p>
+</section>
+
+<!-- 模块4 -->
+<section class="module m4" data-page-node-id="tLa6MgATvoZtaw1eotEdE9">
+  <h2 data-page-node-id="2U06WC0JCEoTlPk9y8qIBw"><span class="badge" data-page-node-id="hp6BGjaO9t9TI5RNGqIEX3">4</span>易混淆边界</h2>
+  <table data-page-node-id="r4I8UEkNbifcqOJyCIXYTy">
+    <tr data-page-node-id="yWMPy4OILlc1E9H6qzqU3o"><th data-page-node-id="fOAuSh8qODj2BgWuWCGW56">易混概念</th><th data-page-node-id="8tynEJH8RlaUxFyDotJ1aG">与本概念（Skill）的关键差异</th><th data-page-node-id="DS6HqpDZC2xiqR3tIVmDVU">何时用哪个</th></tr>
+    <tr data-page-node-id="IkAQGUn8b7hn2mMnYxFFJq"><td data-page-node-id="XJL7enWSsKe8xBdzAFrHFx">工具 (Tool)</td><td data-page-node-id="WsWAYOQyPRYJRa0JFfk4ft">工具是"单个可调用函数"（如一个 API）；Skill 是"说明书+工具+流程"的整体打包</td><td data-page-node-id="uds9wNhYJDjkAgPK2nk5Xf">执行原子动作用工具；完成一类完整任务用 Skill</td></tr>
+    <tr data-page-node-id="hFkIJQfQGH8fzSNZhZUlAC"><td data-page-node-id="tWizR2LUuFsBkZ7FYrKQXH">提示词模板 (Prompt Template)</td><td data-page-node-id="SiJbFRgjIr8lt1jhhhiAL7">模板只是"填空式文本"；Skill 含触发条件、工作流、质量底线，是结构化能力</td><td data-page-node-id="8TnxcNJBimTquutPoKDwvo">一次性套格式用模板；要稳定可复用能力用 Skill</td></tr>
+    <tr data-page-node-id="eAB2d52CGh41M5DcL0tDfO"><td data-page-node-id="BfM9x66yHG26vv5419DDNY">微调 (Fine-tuning)</td><td data-page-node-id="uITfUo61BC8QJe7hEbsa3T">微调改模型权重（永久改变行为，需训练）；Skill 不改权重，运行时注入上下文</td><td data-page-node-id="tMwmRVHKICVJHwwBqzWMja">要改变模型内在能力用微调；要编排任务流程用 Skill</td></tr>
+    <tr data-page-node-id="pRXLpX79UDu6lvKgy2dk1v"><td data-page-node-id="anhnx4dfCDvFN84bkjUoFC">插件 (Plugin)</td><td data-page-node-id="Ad3vFK0warXIZuaWSn5WHZ">插件侧重"连接外部服务/API"；Skill 侧重"教智能体怎么做某类任务"（可不含外部连接）</td><td data-page-node-id="vfgam6ARSJp89xk9GJEA5b">要接外部系统用插件；要传授做事方法用 Skill</td></tr>
+  </table>
+</section>
+
+<!-- 模块5 -->
+<section class="module m5" data-page-node-id="TNMFFtniUUGBGSB23SBJ9A">
+  <h2 data-page-node-id="TH5tmhlmEkjfwUncg2z3HY"><span class="badge" data-page-node-id="0XnT7mXZqsY7YHgiT8hzYu">5</span>权威参考链接</h2>
+  <div class="ref" data-page-node-id="GYaoijFCrFnDIQyFy0WwxK"><span class="ty" data-page-node-id="rXvi4gLMxNk85wJU7QPm5Z">论文</span>Wang, et al. <strong data-page-node-id="8TQJLS3QN2qlHWxjohWlJj">Voyager: An Open-Ended Embodied Agent with Large Language Models</strong> (2023). 提出"技能库（skill library）"概念：智能体把成功代码存为技能供复用，是 Skill 思路的学术代表。<br data-page-node-id="9URA1cSDQHt5tmRcidwuHo"><a href="https://arxiv.org/abs/2305.16291" target="_blank" data-page-node-id="mvhPkCEATdhZai9vkTIO7g">arxiv.org/abs/2305.16291</a></div>
+  <div class="ref" data-page-node-id="0flEQ8WrSGFJveNZLK1vHS"><span class="ty" data-page-node-id="C16FQQqHzvvjt8BeXNn006">文档</span><strong data-page-node-id="doIQ5O8pEJuiWxOCUHC8wO">WorkBuddy 官方文档</strong>。了解 SKILL.md 的实际写法、触发与加载机制（本页所用 concept-learning-generator 即其实现）。<br data-page-node-id="EhoV2hTDlQWUfLCuC9qQ3Z"><a href="https://www.workbuddy.cn/docs/workbuddy/Overview" target="_blank" data-page-node-id="KoeZ12Iu7OEnSkiSBk9824">workbuddy.cn/docs/workbuddy/Overview</a>（需自行检索 Skills 相关章节）</div>
+  <div class="ref" data-page-node-id="wtRnbJIdniYS8vb5nguUA0"><span class="ty" data-page-node-id="hlCq9E78uvzOcWJlZoru4S">文档</span><strong data-page-node-id="BVKP6hhJUkgtJWNXhE7NSd">LangChain Tools / Tool Calling</strong> 官方文档。理解"工具被智能体调用"的工程实现，对照 Skill 中工具部分的落地方式。<br data-page-node-id="8HlVrlCGVJs7H4xWXnVwCI"><a href="https://python.langchain.com/docs/concepts/tools/" target="_blank" data-page-node-id="tC0CU4vI6zhe92ArNEhrXc">python.langchain.com/docs/concepts/tools</a></div>
+</section>
+
+<!-- 模块6 -->
+<section class="module m6" data-page-node-id="kZijKqhe9dsw9jerIetNQX">
+  <h2 data-page-node-id="cvKiBomA9m9OXw7ZS1ZKzb"><span class="badge" data-page-node-id="0tGItdB150rjALysvHYUhW">6</span>自测思考题</h2>
+  <ol class="qlist" data-page-node-id="o0SSz6OfBCM43Tcm4jGE9F">
+    <li data-page-node-id="NgjufBpUBLvyZXJ0KHCRj5">复述：Skill 和"写一段好用的提示词"有什么本质不同？为什么说前者是"资产"而后者不是？<div class="hint" data-page-node-id="Sntt9IFUuhXeNp528dqgNg">提示方向：从触发条件、工作流、质量底线、可复用四点切入。</div></li>
+    <li data-page-node-id="5Umi7YmN7Dcc6fuLoSimqN">机制题：Skill 加载后，模型是"学会了新技能"还是"只是按注入的说明做事"？结合微调与上下文的关系说明。<div class="hint" data-page-node-id="nMFhZVIB5Gl0p9FxnnFv1a">提示方向：权重是否变化、能力是否运行时注入。</div></li>
+    <li data-page-node-id="cTEjuaBMiWq3zwpuS8h8dg">辨析题：你写了一个"调用某 API 查库存"的函数。它算 Skill 还是 Tool？要升级成 Skill 还缺什么？<div class="hint" data-page-node-id="3pNCIjQsLnaWQSiN9AXNQw">提示方向：单函数 vs 说明书+流程+质量底线。</div></li>
+    <li data-page-node-id="rikddtJXnR3z3MMHf9mYnu">应用题：团队里每个人都各自写提示词做周报，结果格式各异。如何用 Skill 统一产出？列出你的 Skill 至少要含哪些部分。<div class="hint" data-page-node-id="aMVjo2UCTdRBifAvlB3m7N">提示方向：元数据、触发、工作流、质量底线。</div></li>
+    <li data-page-node-id="nKJbjV0mdQJ5CUjYIQ3RH5">迁移题：参照 Voyager 的"技能库"思路，一个智能体如何在反复执行任务中越来越强？Skill 在其中扮演什么角色？<div class="hint" data-page-node-id="9o2VlZ9wJXAaNvEN1eVy9H">提示方向：存成功经验→检索复用→持续成长。</div></li>
+  </ol>
+</section>
+
+<footer data-page-node-id="gn30e8HLTGgRkHTBP9T2WP">统计与数据分析课程 · 概念学习资料 · 共 6 个模块</footer>
+</div>
+</body>
+</html>

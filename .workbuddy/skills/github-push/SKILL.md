@@ -33,9 +33,20 @@ agent_created: true
 cd "E:/repos/statistics-data-analysis-2026"
 git rev-parse --is-inside-work-tree      # 必须在工作区内
 git remote -v                            # 确认 origin 存在
-git status --short --branch              # 看改动与领先/落后情况
+git status --short --branch              # 看工作区改动（不要用它判断领先/落后，见下）
 git log --oneline -3
 ```
+
+**⚠️ 不要用 `git status` 判断领先/落后。** 本机 `.git/refs/remotes/origin/` 目录常被 git 自动清掉，此时 `origin/<branch>` 只存在于 `.git/packed-refs`，`git fetch` 既不会更新它、也不会报错（fetch 输出的 `a..b main -> origin/main` 只写了 `FETCH_HEAD`）。结果是 `git status` 长期显示错误的 `[ahead N]`，让人误以为本地有独有提交。
+
+判断远程真实状态，只信这两条（`git ls-remote` 最权威，API 交叉验证）：
+
+```bash
+git ls-remote origin refs/heads/main
+curl -s "https://api.github.com/repos/tuoqi-stats/statistics-data-analysis-2026/branches/main"
+```
+
+若远程 SHA ≠ 本地 HEAD：先 `git fetch origin` 把对象拉到本地（`git cat-file -t <远程SHA>` 应返回 `commit`），再按下方分流处理。修复卡住的跟踪引用见 `references/troubleshooting.md`。
 
 异常分支：未初始化 git、缺 remote、处于 detached HEAD、本地落后远程 —— 见 `references/troubleshooting.md` 对应小节后再继续。
 

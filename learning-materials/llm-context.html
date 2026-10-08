@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型的上下文 · 概念学习资料</title>
+<style>
+  :root{
+    --bg:#f4f5f9; --card:#ffffff; --ink:#1f2330; --sub:#6b7280; --line:#e6e8f0;
+    --accent:#5b6cff; --m1:#6366f1; --m2:#0ea5e9; --m3:#ec4899; --m4:#f59e0b; --m5:#10b981; --m6:#8b5cf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;padding:0 0 60px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;padding:46px 20px 40px;border-radius:0 0 28px 28px;box-shadow:0 10px 30px rgba(14,165,233,.25)}
+  header h1{font-size:2.1rem;font-weight:800;letter-spacing:.5px}
+  header .tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .tag{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:4px 12px;border-radius:999px;font-size:.8rem}
+  header .meta{margin-top:14px;font-size:.85rem;opacity:.9}
+  .module{background:var(--card);border-radius:18px;margin-top:26px;padding:26px 30px 22px;box-shadow:0 2px 14px rgba(31,35,48,.05);border:1px solid var(--line);border-left:6px solid var(--accent)}
+  .module.m1{border-left-color:var(--m1)} .module.m2{border-left-color:var(--m2)}
+  .module.m3{border-left-color:var(--m3)} .module.m4{border-left-color:var(--m4)}
+  .module.m5{border-left-color:var(--m5)} .module.m6{border-left-color:var(--m6)}
+  .module h2{font-size:1.18rem;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .badge{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0}
+  .m1 .badge{background:var(--m1)} .m2 .badge{background:var(--m2)} .m3 .badge{background:var(--m3)}
+  .m4 .badge{background:var(--m4)} .m5 .badge{background:var(--m5)} .m6 .badge{background:var(--m6)}
+  .module h3{font-size:.98rem;margin:16px 0 8px;color:var(--ink)}
+  .module p{margin:8px 0;color:#374151}
+  .module ul{margin:8px 0 8px 6px;padding-left:20px}
+  .module li{margin:5px 0;color:#374151}
+  .analogy{background:#eef2ff;border:1px dashed #c7d2fe;border-radius:12px;padding:14px 16px;margin:12px 0;font-size:.93rem}
+  .analogy b{color:var(--m1)}
+  .formula{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:16px 18px;margin:12px 0;font-family:"Cascadia Code",Consolas,monospace;font-size:.88rem;overflow-x:auto;line-height:1.7}
+  .formula .cmt{color:#94a3b8}
+  .formula .hl{color:#7dd3fc}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f8f9fc;color:var(--ink);font-weight:600}
+  tr:nth-child(even) td{background:#fafbff}
+  .ref{display:block;margin:8px 0;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:.9rem}
+  .ref .ty{display:inline-block;background:var(--m5);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:6px;margin-right:8px;vertical-align:middle}
+  .ref a{color:#047857;word-break:break-all}
+  .qbox{background:#faf5ff;border:1px solid #ddd6fe;border-radius:12px;padding:14px 16px;margin:10px 0}
+  .qbox .hint{color:var(--sub);font-size:.85rem;margin-top:6px}
+  ol.qlist{margin:6px 0 6px 6px;padding-left:22px}
+  ol.qlist li{margin:10px 0}
+  code{background:#eef2ff;padding:2px 6px;border-radius:5px;font-family:"Cascadia Code",Consolas,monospace;font-size:.85em;color:#3730a3}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>大模型的上下文（Context）</h1>
+    <div class="tags"><span class="tag">LLM 基础</span><span class="tag">机制</span><span class="tag">限制与优化</span></div>
+    <div class="meta">概念学习资料 · 由 concept-learning-generator 生成 · 2026-09-09</div>
+  </div>
+</header>
+<div class="wrap">
+
+<!-- 模块1 -->
+<section class="module m1">
+  <h2><span class="badge">1</span>个人通俗解释</h2>
+  <p>上下文 = AI的办公桌桌面
+大模型本身没有记忆，只能看见桌面上摆放的内容：任务指令、聊天历史、参考资料。
+1.桌面大小有限（上下文窗口），内容太多就要丢弃旧内容或压缩；
+2.桌面首尾内容看得清楚，中间内容容易被遗忘；
+3.新开会话，桌面全部清空，不会保存旧对话。
+AI没有抽屉柜子，跨会话记忆，需要外部存储重新放到桌面上。
+
+<!-- 模块2 -->
+<section class="module m2">
+  <h2><span class="badge">2</span>核心机制</h2>
+  <h3>2.1 上下文是怎么拼出来的</h3>
+  <p>一次请求的上下文通常按这个顺序拼接，模型对每一部分一视同仁地"看到"：</p>
+  <div class="formula">上下文 = <span class="hl">系统提示(System Prompt)</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="hl">示例(Few-shot 示例)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="hl">对话历史(历史轮次)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="hl">检索/参考资料(RAG 注入)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="hl">当前用户输入</span><br>
+<span class="cmt">// 全部切分成 token，送入 Transformer，靠 self-attention 建立彼此关联</span>
+  </div>
+  <h3>2.2 Token 与上下文窗口</h3>
+  <ul>
+    <li><strong>分词（Tokenization）</strong>：文本先被切成 token（不等于字/词，一个中文字常是 1–2 token）。上下文长度以 token 计。</li>
+    <li><strong>上下文窗口（Context Window）</strong>：模型一次能处理的最大 token 数。早期 GPT-3 是 2K，现在主流模型普遍到 128K–1M。</li>
+    <li><strong>窗口满 = 遗忘</strong>：超出窗口时，系统一般从最早的历史开始截断（滑动窗口），所以"太久以前的对话"会被丢弃。</li>
+  </ul>
+  <h3>2.3 注意力如何"用"上下文</h3>
+  <p>Transformer 用 <strong>self-attention（自注意力）</strong>让每个 token 都能"关注"上下文里所有其他 token，从而决定每个词的语义权重。核心公式：</p>
+  <div class="formula">Attention(Q, K, V) = softmax(QK<sup>T</sup> / √d<sub>k</sub>) · V<br>
+<span class="cmt">// Q=查询 K=键 V=值；√d_k 缩放防止点积过大导致梯度消失</span><br>
+<span class="cmt">// 关键：注意力对全部上下文是 O(n²) 复杂度 → 上下文越长，计算量/显存增长越快</span>
+  </div>
+  <h3>2.4 成本与延迟</h3>
+  <p>上下文越长，<strong>输入 token 费用更高、首字延迟更大</strong>（attention 是 n² 增长）。所以"塞越多越好"并不成立——存在"中间迷失"现象：长上下文中段的关键信息反而更容易被忽略。</p>
+</section>
+
+<!-- 模块3 -->
+<section class="module m3">
+  <h2><span class="badge">3</span>真实应用场景</h2>
+  <table>
+    <tr><th>场景</th><th>用在什么产品/环节</th><th>为什么用上下文</th><th>角色</th></tr>
+    <tr><td>长文档问答</td><td>把整份 PDF/财报放进上下文直接提问（Gemini、Kimi 长文本）</td><td>模型需"看见"全文细节才能精准回答，长窗口避免分块丢失全局信息</td><td>核心机制</td></tr>
+    <tr><td>多轮对话</td><td>ChatGPT、客服机器人保持上下文连贯</td><td>后续回答要参考前面说过的话，全靠上下文携带历史</td><td>核心机制</td></tr>
+    <tr><td>代码编辑</td><td>Cursor/Claude Code 把相关文件塞进上下文再改代码</td><td>改代码需看见函数定义、调用关系，靠上下文携带代码上下文</td><td>辅助组件</td></tr>
+    <tr><td>检索增强(RAG)</td><td>把检索到的知识库片段注入上下文再回答</td><td>模型知识有截止日期，靠上下文注入"最新/私有"事实</td><td>辅助组件</td></tr>
+    <tr><td>少样本学习</td><td>在提示里给几个示例让模型模仿格式/风格</td><td>不更新权重，仅靠上下文里的示例"现场学会"任务</td><td>核心机制</td></tr>
+  </table>
+  <p>共性：这些场景都靠"把信息摆进上下文"来让模型即时可用——窗口大小直接决定能处理任务的规模。</p>
+</section>
+
+<!-- 模块4 -->
+<section class="module m4">
+  <h2><span class="badge">4</span>易混淆边界</h2>
+  <table>
+    <tr><th>易混概念</th><th>与本概念（上下文）的关键差异</th><th>何时用哪个</th></tr>
+    <tr><td>长期记忆 (Memory)</td><td>上下文是"本次请求能看见的文本"，用完即丢；记忆是跨请求持久化存储、按需检索回来的内容</td><td>单轮内连贯用上下文；跨会话记住偏好用 Memory/向量库</td></tr>
+    <tr><td>训练数据 (Pretraining)</td><td>训练数据在训练阶段固化进权重，回答时不可见；上下文是推理时实时注入的</td><td>通用知识靠训练数据；本次任务的特定信息靠上下文</td></tr>
+    <tr><td>微调 (Fine-tuning)</td><td>微调是改模型权重（永久改变行为）；上下文不改权重，只影响本次回答</td><td>固定风格/领域习惯用微调；临时/动态信息用上下文</td></tr>
+    <tr><td>嵌入 (Embedding)</td><td>嵌入是把文本变成向量用于检索；上下文是模型直接读的原始文本</td><td>要"召回相关片段"用嵌入检索；要让模型"读到"用上下文</td></tr>
+  </table>
+</section>
+
+<!-- 模块5 -->
+<section class="module m5">
+  <h2><span class="badge">5</span>权威参考链接</h2>
+  <div class="ref"><span class="ty">论文</span>Vaswani, et al. <strong>Attention Is All You Need</strong> (NeurIPS 2017). Transformer 与 self-attention 的源头，理解上下文机制的根基。<br><a href="https://arxiv.org/abs/1706.03762" target="_blank">arxiv.org/abs/1706.03762</a></div>
+  <div class="ref"><span class="ty">论文</span>Lewis, et al. <strong>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</strong> (NeurIPS 2020). RAG 的奠基工作，讲清如何把检索内容注入上下文。<br><a href="https://arxiv.org/abs/2005.11401" target="_blank">arxiv.org/abs/2005.11401</a></div>
+  <div class="ref"><span class="ty">论文</span>Liu, et al. <strong>Lost in the Middle: How Language Models Use Long Contexts</strong> (2023). 揭示长上下文中段信息易被忽略的现象，必读。<br><a href="https://arxiv.org/abs/2307.03172" target="_blank">arxiv.org/abs/2307.03172</a></div>
+  <div class="ref"><span class="ty">论文</span>Google DeepMind, <strong>Gemini: A Family of Highly Capable Multimodal Models</strong> (2023). 代表长上下文（1M 级）能力方向的里程碑模型报告。<br><a href="https://arxiv.org/abs/2312.11805" target="_blank">arxiv.org/abs/2312.11805</a>（需自行检索最新技术报告）</div>
+</section>
+
+<!-- 模块6 -->
+<section class="module m6">
+  <h2><span class="badge">6</span>自测思考题</h2>
+  <ol class="qlist">
+    <li>复述：上下文窗口变大，为什么并不等于"模型变聪明了"？它和模型知识之间是什么关系？<div class="hint">提示方向：区分"看见的信息"与"训练时记下的知识"。</div></li>
+    <li>机制题：按公式说明 self-attention 中 √d<sub>k</sub> 的作用，并解释为什么上下文越长计算成本增长越快。<div class="hint">提示方向：点积缩放 + O(n²) 复杂度。</div></li>
+    <li>辨析题：用户问"模型到底记不记得我们上周聊的偏好？"——请从上下文与长期记忆的区别解释为什么默认"记不住"。<div class="hint">提示方向：上下文用完即丢 vs 持久化记忆。</div></li>
+    <li>应用题：一份 200 页报告要问答，模型窗口只有 32K token 放不下。你会选 RAG 还是长上下文模型？各有什么取舍？<div class="hint">提示方向：分块检索 vs 整体可见；精度 vs 全局信息。</div></li>
+    <li>迁移题：解释"Lost in the Middle"现象，并给一条提示词摆放策略来缓解它。<div class="hint">提示方向：把关键信息放在开头/结尾，避免埋在中段。</div></li>
+  </ol>
+</section>
+
+<footer>统计与数据分析课程 · 概念学习资料 · 共 6 个模块</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="c3ZQEKKEmfbxQXeIEGBFli">
+<head data-page-node-id="xfDKSqG5lYVNVXSTeDDbCT">
+<meta charset="UTF-8" data-page-node-id="ASdzhVk3rX1GYTOH2ZpOoi">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="b9WvrWnae5HmD7anwpzhgN">
+<title>Agent · 概念学习资料</title>
+<style>
+  :root{
+    --bg:#f4f5f9; --card:#ffffff; --ink:#1f2330; --sub:#6b7280; --line:#e6e8f0;
+    --accent:#5b6cff; --m1:#6366f1; --m2:#0ea5e9; --m3:#ec4899; --m4:#f59e0b; --m5:#10b981; --m6:#8b5cf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;padding:0 0 60px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,#5b6cff,#818cf8);color:#fff;padding:46px 20px 40px;border-radius:0 0 28px 28px;box-shadow:0 10px 30px rgba(91,108,255,.25)}
+  header h1{font-size:2.1rem;font-weight:800;letter-spacing:.5px}
+  header .tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .tag{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:4px 12px;border-radius:999px;font-size:.8rem}
+  header .meta{margin-top:14px;font-size:.85rem;opacity:.9}
+  .module{background:var(--card);border-radius:18px;margin-top:26px;padding:26px 30px 22px;box-shadow:0 2px 14px rgba(31,35,48,.05);border:1px solid var(--line);border-left:6px solid var(--accent)}
+  .module.m1{border-left-color:var(--m1)} .module.m2{border-left-color:var(--m2)}
+  .module.m3{border-left-color:var(--m3)} .module.m4{border-left-color:var(--m4)}
+  .module.m5{border-left-color:var(--m5)} .module.m6{border-left-color:var(--m6)}
+  .module h2{font-size:1.18rem;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .badge{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0}
+  .m1 .badge{background:var(--m1)} .m2 .badge{background:var(--m2)} .m3 .badge{background:var(--m3)}
+  .m4 .badge{background:var(--m4)} .m5 .badge{background:var(--m5)} .m6 .badge{background:var(--m6)}
+  .module h3{font-size:.98rem;margin:16px 0 8px;color:var(--ink)}
+  .module p{margin:8px 0;color:#374151}
+  .module ul{margin:8px 0 8px 6px;padding-left:20px}
+  .module li{margin:5px 0;color:#374151}
+  .analogy{background:#eef2ff;border:1px dashed #c7d2fe;border-radius:12px;padding:14px 16px;margin:12px 0;font-size:.93rem}
+  .analogy b{color:var(--m1)}
+  .formula{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:16px 18px;margin:12px 0;font-family:"Cascadia Code",Consolas,monospace;font-size:.9rem;overflow-x:auto}
+  .formula .cmt{color:#94a3b8}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f8f9fc;color:var(--ink);font-weight:600}
+  tr:nth-child(even) td{background:#fafbff}
+  .ref{display:block;margin:8px 0;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:.9rem}
+  .ref .ty{display:inline-block;background:var(--m5);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:6px;margin-right:8px;vertical-align:middle}
+  .ref a{color:#047857;word-break:break-all}
+  .qbox{background:#faf5ff;border:1px solid #ddd6fe;border-radius:12px;padding:14px 16px;margin:10px 0}
+  .qbox .hint{color:var(--sub);font-size:.85rem;margin-top:6px}
+  ol.qlist{margin:6px 0 6px 6px;padding-left:22px}
+  ol.qlist li{margin:10px 0}
+  code{background:#eef2ff;padding:2px 6px;border-radius:5px;font-family:"Cascadia Code",Consolas,monospace;font-size:.85em;color:#3730a3}
+  footer{text-align:center;color:var(--sub);font-size:.82rem;margin-top:36px}
+</style>
+</head>
+<body data-page-node-id="YEOSxhgLrNCvbhfwORrub8">
+<header data-page-node-id="OocJzRBf8gvFHGqE5gFkD2">
+  <div class="wrap" data-page-node-id="gEVMbDGnxNbj2Jr84i8dZd">
+    <h1 data-page-node-id="FOM0bTnyNRt8ErvZa8YY8r">Agent（智能体）</h1>
+    <div class="tags" data-page-node-id="a1z3UBcp8MJ88QT3dEZYnn"><span class="tag" data-page-node-id="w2QWyaDj9iSTu4NgCq9epG">AI 概念</span><span class="tag" data-page-node-id="QtBBWc2eNmPZXBQbmwp0OE">LLM 应用</span><span class="tag" data-page-node-id="beTcszmcJWBlSzhm8iXIY9">自主系统</span></div>
+    <div class="meta" data-page-node-id="4zUhynD48DRqLG2DfF1MBB">概念学习资料 · 由 concept-learning-generator 生成 · 2026-09-09</div>
+  </div>
+</header>
+<div class="wrap" data-page-node-id="xClWXf7bucmwTDwe7YZ5rG">
+
+<!-- 模块1 -->
+<section class="module m1" data-page-node-id="Ew9SjGReyFESOAYeMPZzUn">
+  <h2 data-page-node-id="YuAyGH4i0NG7yX9JGDGXGE"><span class="badge" data-page-node-id="MsidIV2mJZ1C1JmVblo8WU">1</span>个人通俗解释</h2>
+  <p data-page-node-id="y5lwwVfFLJvjvuNx8X1DlQ">Agent就像一个有授权的实习生。
+普通大模型是军师：你问它才答，只出主意，不干活。
+Agent接到目标后会自主干活：拆分任务、查资料、写代码、自我校验，失败就换方案，直到完成任务。
+普通AI靠人一步步驱动；Agent自己做决策推进。
+Agent的内核还是大模型，只是额外加上观察、调用工具、自我复盘的能力，从“会说”变成“会做”。
+
+<!-- 模块2 -->
+<section class="module m2" data-page-node-id="AI6ZNwDxSxsBgIzncYHfH0">
+  <h2 data-page-node-id="ne9wH2e7TnvdETFunqpM0P"><span class="badge" data-page-node-id="e7CwduLoNOTQ0xbiFR4KYg">2</span>核心机制</h2>
+  <p data-page-node-id="M6vmlsimqfsOicE0kDH68D">Agent 的运行遵循一个经典循环：<strong data-page-node-id="d9yEsw1EZLzMEKnyPhC5mE">感知 → 推理/规划 → 行动 → 观察</strong>（Perception → Reasoning/Planning → Action → Observation），不断迭代直到目标达成。学术界把这个模式称为 <strong data-page-node-id="nE9Yr0EsPJheE27AmqXfSr">ReAct</strong>（Reason + Act）。</p>
+  <div class="formula" data-page-node-id="5b6p0lI0GeyJoCiApBd1C5">思考循环：<br data-page-node-id="oMf95M6lmspBKPrDxBbwcJ">
+Thought (思考下一步该做什么)<br data-page-node-id="A4oEiFjHRAow0DFPDA1BFa">
+Action (调用某个工具/函数)<br data-page-node-id="yHTluj9L5oCtuy7psJBAvZ">
+Observation (读取工具返回的结果)<br data-page-node-id="wsNNpbVjIDbZRcsCnVjf16">
+→ 回到 Thought … 直到得到最终答案 <span class="cmt" data-page-node-id="wn24mfDv2Wmyog9lITQoLI">// 循环直至完成</span>
+  </div>
+  <h3 data-page-node-id="hZk9NPSM0BCPqq8YHTcHx7">关键组成部件</h3>
+  <ul data-page-node-id="bu14lE6al3axZne2OVqYD7">
+    <li data-page-node-id="yrz2LzMjmfkWdClnDtaJAS"><strong data-page-node-id="YbUGWfqsPwWy000ZvbnGNx">规划（Planning）</strong>：把大目标拆成可执行的子任务，常用"思维链（Chain-of-Thought）"或任务分解（如把"做报表"拆成"取数→清洗→汇总→可视化→写结论"）。</li>
+    <li data-page-node-id="6h1UgyKihB72BGpjwK9sOX"><strong data-page-node-id="pqmgEDYkKeI3zR3KENyL0x">记忆（Memory）</strong>：短期记忆即当前对话/上下文；长期记忆通常借助向量数据库存储历史经验，按需检索复用。</li>
+    <li data-page-node-id="IPG0FoFVwoYeiNQCVBJclf"><strong data-page-node-id="1mPpLtbEZlzCNAEqvYj7jx">工具使用（Tool Use）</strong>：通过"函数调用（function calling）"执行外部动作，如搜索网页、运行代码、读写文件、调 API。</li>
+    <li data-page-node-id="AmPw2XiDOMkNy2E4xQamO8"><strong data-page-node-id="6PRtXb0XhoCEhmUFTI6Woi">行动执行（Action）</strong>：真正"动手"的部分——工具调用后，Agent 观察返回结果并决定下一步。</li>
+  </ul>
+  <h3 data-page-node-id="R6c4a0Xavw4ixqCSspghlx">机制要点</h3>
+  <p data-page-node-id="bovUz7ODWDTi7yBl39pwus">LLM 在这里扮演<strong data-page-node-id="CWutAP1pnjgQySQL0KoIJv">决策中枢</strong>：它不直接"知道"外部世界的状态，而是通过工具调用的输入/输出来间接感知和影响世界。循环的每一步都靠 LLM 推理决定，因此 Agent 的能力上限高度依赖底座模型的质量、工具集的丰富度，以及规划策略的好坏。</p>
+</section>
+
+<!-- 模块3 -->
+<section class="module m3" data-page-node-id="WhJvZmx3kILmP2FoyeSSKk">
+  <h2 data-page-node-id="LwzEFEyVd2K143G1cxmJxd"><span class="badge" data-page-node-id="yK9YDP8MpMXBP6f4gdnYFy">3</span>真实应用场景</h2>
+  <table data-page-node-id="vTLiyVR4SR1jDMVHMHpqIp">
+    <tr data-page-node-id="jCOGXTLIFdRXVq61RqvFmq"><th data-page-node-id="5P0ZsnROpSpINEfByHgyuu">场景</th><th data-page-node-id="fKlaaMvFuNme73jNEFYW7T">用在什么产品/环节</th><th data-page-node-id="ZBIJkgXTIySq8wFQNx1Gqp">为什么用 Agent</th><th data-page-node-id="XaZE1AsadDPDAjBCfI1g1j">角色</th></tr>
+    <tr data-page-node-id="PNDVhwCrGFtrWkDKUWIie2"><td data-page-node-id="ZkwTY7JrBhWJTqeljn5DrO">编程开发</td><td data-page-node-id="laUalAFGkaoML7qisns51r">Cursor、Claude Code、GitHub Copilot Workspace：读懂代码库、改多文件、跑测试、提 PR</td><td data-page-node-id="WIssbdos6JQDIX1NMfYm1n">修一个 bug 涉及"定位→改代码→验证"，单轮对话做不完，需要自主多步执行</td><td data-page-node-id="VScgeGHxKQjVlbCkXeGlzi">核心方法</td></tr>
+    <tr data-page-node-id="pkLvkekh78GmN5bqourigf"><td data-page-node-id="CVJhGYJeyuGFZkfHwgU3Ps">深度研究</td><td data-page-node-id="JOUyCwLVkIv9fPHpW7UGrJ">OpenAI Deep Research、Perplexity Pro：多轮检索、阅读、综合成报告</td><td data-page-node-id="0vtlyEehadXWcdP6E81Uly">研究报告需反复搜索+阅读+提炼，Agent 能自主迭代搜索策略</td><td data-page-node-id="tCWOCzgtRDmGtx0W835KVk">核心方法</td></tr>
+    <tr data-page-node-id="b7YrWFE0vXnV55dDG8IBrv"><td data-page-node-id="2pNLYZTggFZTvWRPTLqHER">客服运营</td><td data-page-node-id="JUOPtyWipXupMmF95bfSDC">电商自动客服：查订单、改地址、发起退款、通知物流</td><td data-page-node-id="b6ZX4eAZCY6ZN7l3MaqC6C">处理流程要查数据库+调业务系统，不是单纯聊天能完成</td><td data-page-node-id="DaxzpispM2OQ5V9LmTFfBT">核心方法</td></tr>
+    <tr data-page-node-id="EFwGAZh6uywqNAFTnTpHhk"><td data-page-node-id="nS6kTU8jKxafKyUce5gPTZ">数据分析</td><td data-page-node-id="LWgVqpPvno8CbcyuDmqopy">ChatBI 类 Agent：自然语言提问→写 SQL→出图→解读</td><td data-page-node-id="qi2WNY1jnS9USxOCFXtkDx">分析是"取数→可视化→总结"的多步任务，适合 Agent 自主编排</td><td data-page-node-id="6grbQHacOhcidIlHLXUdj4">核心方法</td></tr>
+    <tr data-page-node-id="l0sR0fFMpbgK7UjZtBgya5"><td data-page-node-id="mO58vOj6eQicPzQLEFHyGJ">浏览器自动化</td><td data-page-node-id="Y2FLTMPtVEarn05DI4IQAr">网页抓取/填表/比价 Agent：模拟人操作网页</td><td data-page-node-id="UhbAqDBZVy4iqq5pDRfxO1">网站操作步骤多变、需判断页面状态，硬编码脚本难覆盖</td><td data-page-node-id="yCqBWHMu87UVODJHzR8dH0">核心方法</td></tr>
+  </table>
+  <p data-page-node-id="PN4f8mcF86uD4XtnAAiLvl">共同点：这些场景都需要"看情况决定下一步"，而非固定流程——这正是 Agent 相对普通脚本/聊天机器人的价值所在。</p>
+</section>
+
+<!-- 模块4 -->
+<section class="module m4" data-page-node-id="4jJ51Hk5KCuIUWshhDEZgY">
+  <h2 data-page-node-id="JkW7xGXfzMhyNNz2TgvCNS"><span class="badge" data-page-node-id="OzCC8QZzHTQzKD1pUIZ25o">4</span>易混淆边界</h2>
+  <table data-page-node-id="L0Yg0tCBvu9ugsHO8v5rt0">
+    <tr data-page-node-id="wxox5zmyAN95BEA9El6nJJ"><th data-page-node-id="DObAuyzphsypPRUmFCfZXy">易混概念</th><th data-page-node-id="owWz8Uro7qhKDf8EHn5Vax">与本概念（Agent）的关键差异</th><th data-page-node-id="pbzEoXpESphXI1eHwroCoE">何时用哪个</th></tr>
+    <tr data-page-node-id="3XpJ05g4LRK1R8sQxU6011"><td data-page-node-id="pxDCHxQqzP3GjcRdKDVh7x">聊天机器人 (Chatbot)</td><td data-page-node-id="ptiTEHznCtedFA682QIUBd">聊天机器人只做"问答"，一轮结束；Agent 会自主多步行动、使用工具、改变外部状态</td><td data-page-node-id="60RNifNOLI2YdtUg3SEz7b">只需回答问题用 Chatbot；要完成需多步+工具的任务用 Agent</td></tr>
+    <tr data-page-node-id="euKh7mngOACxNhvZBte5LR"><td data-page-node-id="LEgmJP7dJfOWB8qF3DWKDK">工作流 (Workflow)</td><td data-page-node-id="H4EtIfJqjetV2BuEaNghX2">工作流是<strong data-page-node-id="51YyKQg11RMaYW018sAqJL">预先编排好</strong>的固定流程图；Agent 是<strong data-page-node-id="rSx4IboiA902nf5XLQfvKv">运行时动态决策</strong>下一步做什么</td><td data-page-node-id="VEvT3BkF6hFMx8tbD9A4mt">步骤确定、可预测用 Workflow；步骤依赖中间结果、需灵活判断用 Agent</td></tr>
+    <tr data-page-node-id="aViOHZkxWVIAjhsze8Vrql"><td data-page-node-id="DX3ESskt1LuYYDABpAFtwX">Copilot / 助手</td><td data-page-node-id="ZCCQ6Cp258eTXWrqavMkSh">Copilot 侧重"辅助人"，每步多由人确认；Agent 更强调"自主完成"，人只给目标</td><td data-page-node-id="KYa51zj4FUCQuCza3Qg3tO">要人时刻参与/审核用 Copilot；希望系统自主跑通全程用 Agent</td></tr>
+    <tr data-page-node-id="VVLkfWtGMJsE9UcONxEmzy"><td data-page-node-id="mrvPk5r86ECaHiMCcDZtem">RPA 机器人</td><td data-page-node-id="RwZhnpqTFWq9qJIdKLlxAD">RPA 按固定脚本录制回放操作；Agent 靠 LLM 理解意图并临场决策</td><td data-page-node-id="lUcNRVDtPOdQdJkWW2iYm1">流程稳定不变用 RPA；流程多变、需理解语义用 Agent</td></tr>
+  </table>
+</section>
+
+<!-- 模块5 -->
+<section class="module m5" data-page-node-id="0YLiGTFzjoswFLv3mWWkFO">
+  <h2 data-page-node-id="qUylYG025eoN1VaBGgolFC"><span class="badge" data-page-node-id="HwYu3HHIXYyzabRS2BPsSE">5</span>权威参考链接</h2>
+  <div class="ref" data-page-node-id="JCLVIuUkK7XjXiH0NPQ6Y9"><span class="ty" data-page-node-id="BTQuJcbLCVOxjJbL7zkeXt">论文</span>Yao, et al. <strong data-page-node-id="eV6mo4Ew117WGMvWqEd9IV">ReAct: Synergizing Reasoning and Acting in Language Models</strong> (NeurIPS 2022). 提出 Reason+Act 循环，是 Agent 的奠基工作之一。<br data-page-node-id="kxUeRdgmJpYEo2wdN34kSP"><a href="https://arxiv.org/abs/2210.03629" target="_blank" data-page-node-id="fY9NPGpsNOTpN9UAbwXp8S">arxiv.org/abs/2210.03629</a></div>
+  <div class="ref" data-page-node-id="pciLVcUwPwZ8zMgzlwcFcj"><span class="ty" data-page-node-id="8O53bQvMZKG8h6bsm69XXx">综述</span>Xi, et al. <strong data-page-node-id="zkt75rNmQObVUVwWGy3lHq">The Rise and Potential of Large Language Model Based Agents: A Survey</strong> (2023). 系统梳理 Agent 架构（大脑/感知/行动/记忆）。<br data-page-node-id="oqxlB71AyP2SpPUNi1Exjq"><a href="https://arxiv.org/abs/2309.07864" target="_blank" data-page-node-id="Bm3Zqp60SmPwZGfcZyTiI8">arxiv.org/abs/2309.07864</a></div>
+  <div class="ref" data-page-node-id="mw3C6RHqWHnOB1T4n4PRGi"><span class="ty" data-page-node-id="TVKj8pKRIBpchDsPayqUAL">博客</span>Lilian Weng, <strong data-page-node-id="3xG4eBZrbUzBGwn4hGYc7j">LLM Powered Autonomous Agents</strong> (2023). 工业界被引用最多的 Agent 综述博文，讲清规划/记忆/工具三大件。<br data-page-node-id="VT2PiUJKSwVggAVEU8u0Uf"><a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" data-page-node-id="T4rzJT5LJVdSHY6KVSGHvY">lilianweng.github.io/posts/2023-06-23-agent</a></div>
+
+</section>
+
+<!-- 模块6 -->
+<section class="module m6" data-page-node-id="ARZ031gamIbsoNMhPHhXwD">
+  <h2 data-page-node-id="OIf9mfQxk4VR9fvB12Ec4a"><span class="badge" data-page-node-id="RMBYoA83AdkPz7CpR9blzO">6</span>自测思考题</h2>
+  <ol class="qlist" data-page-node-id="OAKgk7eiuERwXvbxosIgSf">
+    <li data-page-node-id="5t1J82b2nyzp4WH2MZgXh9">用一句话向一个不懂技术的朋友解释 Agent 和聊天机器人的区别。<div class="hint" data-page-node-id="RK8RaTlMfAosc33ZmAdmtM">提示方向：从"是否会主动多步行动"切入。</div></li>
+    <li data-page-node-id="IsxOMkGesf3VXEvBMaGiaY">在 ReAct 循环里，如果某个工具调用返回了错误结果，Agent 接下来会做什么？为什么这个能力对它很重要？<div class="hint" data-page-node-id="cO3cUVlShRIhno391ZM68h">提示方向：观察→思考→调整下一步。</div></li>
+    <li data-page-node-id="2ZFNudi9M2ju4ouuW35k4K">请判断："按固定脚本自动登录并抓取数据的程序"算不算 Agent？说明理由，并指出它更接近哪类系统。<div class="hint" data-page-node-id="gGnhIZQQSTmVTtybIVA8a0">提示方向：对照 Workflow/RPA 与 Agent 的边界。</div></li>
+    <li data-page-node-id="7Xj67gKF7UAD3WrorT3eVl">假设要做一个"每天自动追踪竞品价格并生成周报"的系统，你会用 Workflow 还是 Agent？哪些环节适合交给 Agent 决策？<div class="hint" data-page-node-id="vF4gv1QdUSWFYQdDb4S9Ft">提示方向：区分"固定步骤"与"需临场判断"的部分。</div></li>
+    <li data-page-node-id="kMao8CLy3SfUQipI7wqusH">Agent 的能力受哪三个因素制约？如果底座模型不变，最可能提升 Agent 表现的是改进哪一块？<div class="hint" data-page-node-id="EAjbFLh7MaesPzRCqUdBJo">提示方向：模型 + 工具集 + 规划/记忆策略。</div></li>
+  </ol>
+</section>
+
+<footer data-page-node-id="FxL1a1kooVKmBtfzGyCUgV">统计与数据分析课程 · 概念学习资料 · 共 6 个模块</footer>
+</div>
+</body>
+</html>
