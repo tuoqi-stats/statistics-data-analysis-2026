@@ -136,7 +136,15 @@ python ".workbuddy/skills/github-push/scripts/push_via_api.py" \
 
 - **先提交再兜底**：脚本推送的是 git 索引内容，所以必须先完成步骤 3–4（add + commit），否则索引里没有新内容。
 - **脚本自带凭据闸门**：推送前会扫描本次待推送文件——文件名命中 `.env`/`*.pem`/`*credential*`/`*secret*`/`*token*` 等，或内容命中私钥头、`ghp_*`/`github_pat_*`/`AKIA*`、`password=...` 长串等，一律中止。命中时按步骤 2 处理（移出暂存或加入 `.gitignore`），不要习惯性加 `--allow-secrets` 放行；只有确认是误报才放行。
-- **删除默认禁止**：脚本以「本地索引 = 仓库全量真相」计算删除项。若本地落后于远程（刚在 GitHub 网页上传过文件、或 `origin/main` 跟踪引用卡在旧值），远程独有的文件会被误判为「待删除」。因此脚本检测到删除项即中止，先按提示同步本地（`git fetch origin && git reset --hard origin/main`）再重试；确认确实要删掉远程文件时才加 `--allow-delete`。**不要**为了跳过这个中止而习惯性加 `--allow-delete`。
+- **删除默认禁止**：脚本以「本地索引 = 仓库全量真相」计算删除项。若本地落后于远程（刚在 GitHub 网页上传过文件、或 `origin/main` 跟踪引用卡在旧值），远程独有的文件会被误判为「待删除」。因此脚本检测到删除项即中止；确认确实要删掉远程文件时才加 `--allow-delete`。**不要**为了跳过这个中止而习惯性加 `--allow-delete`。
+- **⚠️ 不要用 `git fetch origin && git reset --hard origin/main` 来「同步本地」**——本机这两个命令都修不好卡住的引用：`git fetch` 只写 `FETCH_HEAD`（已在步骤 1 说明），而 `origin/main` 卡在旧值时 `reset --hard` 会把你**回退到旧提交**，比不同步更糟。正确的落后同步流程（2026-10-08 实测有效）：
+  1. `git ls-remote origin refs/heads/main` 取远程真实 SHA
+  2. `git merge-base --is-ancestor HEAD <远程SHA>` 确认能否快进；再 `git diff --stat HEAD <远程SHA>` 看清会改哪些文件
+  3. 若快进要新增的文件**当前正以未跟踪状态存在**，先 `cp` 备份再 `mv` 挪开，否则报 `untracked working tree files would be overwritten`
+  4. `git merge --ff-only <远程SHA>`
+  5. 直接改写 `.git/packed-refs` 中 `refs/remotes/origin/main` 那行的 SHA（`git update-ref` 和 loose ref 在本机留不住），改完 `git rev-parse origin/main` 复核
+  6. 注意 `core.autocrlf=true`：签出后的工作区文件会比 blob 大（LF→CRLF，每行 +1 字节），**这是正常的**，不要当成内容不一致
+- **推送成功后跟踪引用会再被卡回旧值**：`git push` 成功后 `git rev-parse origin/main` 常仍返回推送前的 SHA，`git status` 于是显示 `[ahead 1]`。**推送本身是成功的**（用 `git ls-remote` 或 API 核验），但为了后续判断准确，需要按上面第 5 步**再改一次** `packed-refs`。
 - 脚本报「远程分支已前进」：说明远程有新提交，重新运行一次即可（会基于新 HEAD 重建）。
 - API 推送生成的 commit SHA 与本地 git commit 不同（对象不同、内容一致），脚本会自动把本地 HEAD 对齐到远程 SHA，属预期行为。
 - 若脚本提示「本地 HEAD 仍为 xxx」：说明对象拉取也失败（网络完全受限）。远程推送其实已成功，本地文件内容与远程一致，仅 commit SHA 不同；网络恢复后执行 `git fetch origin && git reset --hard origin/main` 即可对齐。**不要**因此重跑推送或改用 `--force`。
